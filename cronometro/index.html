@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>David Fest #29 - Countdown</title>
   <style>
-    /* Importamos una fuente estilo neón e industrial más agresiva */
     @import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Permanent+Marker&display=swap');
 
     body {
@@ -17,12 +16,14 @@
       align-items: center;
       min-height: 100vh;
       color: #fff;
+      overflow: hidden;
+      font-family: 'Russo One', sans-serif;
     }
 
     .flyer-container {
       position: relative;
       width: 100%;
-      max-width: 500px; /* Ajustado al tamaño de un flyer */
+      max-width: 500px;
       line-height: 0;
     }
 
@@ -30,44 +31,63 @@
       width: 100%;
       height: auto;
       display: block;
-      box-shadow: 0 0 50px rgba(255, 0, 255, 0.2); /* Resplandor morado sutil */
+      box-shadow: 0 0 50px rgba(59, 130, 246, 0.3);
     }
 
-    /* Contenedor del cronómetro superpuesto al nuevo panel de malla metálica */
+    /* CONTENEDOR DEL CRONÓMETRO RÍTMICO */
     #countdown-wrapper {
       position: absolute;
-      top: 48.2%; /* Ajuste fino para centrar en el panel de malla */
+      top: 48.5%; 
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 80%;
+      width: 85%;
       display: flex;
       justify-content: space-around;
       line-height: normal;
     }
 
-    .time-unit {
-      text-align: center;
-    }
-
-    /* Estilo NEÓN VIBRANTE para los números */
     .number {
-      font-family: 'Russo One', sans-serif;
-      font-size: 2.2rem;
-      display: block;
+      font-size: 2.3rem;
       font-weight: 700;
-      color: #7dd3fc; /* Azul cian neón */
-      /* Este efecto es la clave: múltiples sombras para vibración */
-      text-shadow:
-        0 0 10px #3b82f6,
-        0 0 20px #3b82f6,
-        0 0 30px #f472b6, /* Resplandor rosa sutil */
-        1px 1px 2px rgba(0,0,0,0.8);
+      color: #7dd3fc;
       letter-spacing: 2px;
+      /* ANIMACIÓN DE PULSO CONSTANTE (1 segundo por latido) */
+      animation: neon-pulse 1s ease-in-out infinite alternate;
     }
 
-    /* Ajuste responsivo para celulares */
+    @keyframes neon-pulse {
+      0% {
+        text-shadow: 0 0 5px #3b82f6, 0 0 10px #3b82f6;
+        opacity: 0.7;
+      }
+      100% {
+        text-shadow: 0 0 15px #3b82f6, 0 0 25px #3b82f6, 0 0 35px #f472b6;
+        opacity: 1;
+      }
+    }
+
+    /* BOTÓN DE MÚSICA */
+    .audio-controls {
+      position: fixed;
+      bottom: 25px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    #music-btn {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #3b82f6;
+      color: #7dd3fc;
+      padding: 10px 18px;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #3b82f6;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+    }
+
     @media (max-width: 400px) {
-      .number { font-size: 1.6rem; }
+      .number { font-size: 1.7rem; }
     }
   </style>
 </head>
@@ -77,48 +97,62 @@
     <img src="flyer02.jpeg" alt="Flyer David Fest" class="flyer-img">
 
     <div id="countdown-wrapper">
-      <div class="time-unit">
-        <span class="number" id="days">00</span>
-      </div>
-      <div class="time-unit">
-        <span class="number" id="hours">00</span>
-      </div>
-      <div class="time-unit">
-        <span class="number" id="minutes">00</span>
-      </div>
-      <div class="time-unit">
-        <span class="number" id="seconds">00</span>
-      </div>
+      <div class="time-unit"><span class="number" id="days">00</span></div>
+      <div class="time-unit"><span class="number" id="hours">00</span></div>
+      <div class="time-unit"><span class="number" id="minutes">00</span></div>
+      <div class="time-unit"><span class="number" id="seconds">00</span></div>
     </div>
   </div>
 
+  <div class="audio-controls">
+    <button id="music-btn">■ PAUSE TECHNO</button>
+  </div>
+
+  <audio id="bg-music" loop autoplay>
+    <source src="musicadavidfest.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
     const targetDate = new Date("2026-04-03T18:00:00-06:00").getTime();
+    const musicBtn = document.getElementById('music-btn');
+    const bgMusic = document.getElementById('bg-music');
 
+    // Función para actualizar el reloj
     const updateCountdown = () => {
       const now = new Date().getTime();
       const distance = targetDate - now;
-
       if (distance <= 0) {
-        // Estilo de texto de "YA EMPEZÓ" para que también parezca neón
-        document.getElementById("countdown-wrapper").innerHTML = "<h2 style='color:#7dd3fc; text-shadow:0 0 10px #3b82f6, 0 0 20px #f472b6; font-family: Permanent Marker; font-size:2.2rem; width:100%; text-align:center;'>¡YA EMPEZÓ!</h2>";
+        document.getElementById("countdown-wrapper").innerHTML = "<h2 style='color:#7dd3fc; font-family:Permanent Marker; text-align:center; width:100%'>¡DALE!</h2>";
         return;
       }
-
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((distance / (1000 * 60)) % 60);
-      const seconds = Math.floor((distance / 1000) % 60);
-
-      document.getElementById("days").innerText = days.toString().padStart(2, '0');
-      document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
-      document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
-      document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+      document.getElementById("days").innerText = Math.floor(distance / 86400000).toString().padStart(2, '0');
+      document.getElementById("hours").innerText = Math.floor((distance % 86400000) / 3600000).toString().padStart(2, '0');
+      document.getElementById("minutes").innerText = Math.floor((distance % 3600000) / 60000).toString().padStart(2, '0');
+      document.getElementById("seconds").innerText = Math.floor((distance % 60000) / 1000).toString().padStart(2, '0');
     };
 
-    setInterval(updateCountdown, 1000);
-    updateCountdown(); // Ejecución inmediata
-  </script>
+    // Intentar reproducir música al cargar
+    window.addEventListener('load', () => {
+      bgMusic.play().catch(() => {
+        // Si el navegador bloquea el autoplay, el botón dirá "PLAY"
+        musicBtn.innerText = "▶ PLAY TECHNO";
+      });
+    });
 
+    // Control del botón
+    musicBtn.addEventListener('click', () => {
+      if (bgMusic.paused) {
+        bgMusic.play();
+        musicBtn.innerText = "■ PAUSE";
+      } else {
+        bgMusic.pause();
+        musicBtn.innerText = "▶ PLAY TECHNO";
+      }
+    });
+
+    // Iniciar el ciclo
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
 </body>
 </html>
