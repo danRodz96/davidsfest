@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>David Fest #29 - Countdown</title>
+  
+  <title>David Fest #29 - Cuenta Regresiva</title>
+  <meta property="og:title" content="David Fest #29 - ¡Prepárate!">
+  <meta property="og:description" content="Faltan pocos días para la mejor experiencia Techno. ¡DALE!">
+  <meta property="og:image" content="flyer-neon.png">
+  <meta property="og:type" content="website">
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Permanent+Marker&display=swap');
 
@@ -25,16 +31,17 @@
       width: 100%;
       max-width: 500px;
       line-height: 0;
+      transition: transform 0.1s ease-in-out;
     }
 
     .flyer-img {
       width: 100%;
       height: auto;
       display: block;
-      box-shadow: 0 0 50px rgba(59, 130, 246, 0.3);
+      box-shadow: 0 0 60px rgba(59, 130, 246, 0.4);
     }
 
-    /* CONTENEDOR DEL CRONÓMETRO RÍTMICO */
+    /* CONTENEDOR DEL CRONÓMETRO */
     #countdown-wrapper {
       position: absolute;
       top: 48.5%; 
@@ -46,22 +53,26 @@
       line-height: normal;
     }
 
+    /* EFECTO BASS-BOOST RÍTMICO */
     .number {
       font-size: 2.3rem;
       font-weight: 700;
       color: #7dd3fc;
       letter-spacing: 2px;
-      /* ANIMACIÓN DE PULSO CONSTANTE (1 segundo por latido) */
-      animation: neon-pulse 1s ease-in-out infinite alternate;
+      /* Animación que simula el golpe del bajo */
+      animation: bass-boost 0.8s ease-in-out infinite alternate;
+      display: inline-block;
     }
 
-    @keyframes neon-pulse {
+    @keyframes bass-boost {
       0% {
-        text-shadow: 0 0 5px #3b82f6, 0 0 10px #3b82f6;
+        text-shadow: 0 0 5px #3b82f6;
+        transform: scale(0.95); /* Encogimiento previo al golpe */
         opacity: 0.7;
       }
       100% {
-        text-shadow: 0 0 15px #3b82f6, 0 0 25px #3b82f6, 0 0 35px #f472b6;
+        text-shadow: 0 0 20px #3b82f6, 0 0 40px #f472b6;
+        transform: scale(1.1); /* Golpe de bajo (expansión) */
         opacity: 1;
       }
     }
@@ -75,15 +86,22 @@
     }
 
     #music-btn {
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.85);
       border: 2px solid #3b82f6;
       color: #7dd3fc;
-      padding: 10px 18px;
+      padding: 12px 20px;
       border-radius: 50px;
       cursor: pointer;
       box-shadow: 0 0 15px #3b82f6;
       font-size: 0.7rem;
       text-transform: uppercase;
+      font-family: 'Russo One', sans-serif;
+      transition: 0.3s;
+    }
+
+    #music-btn:hover {
+      box-shadow: 0 0 25px #f472b6;
+      border-color: #f472b6;
     }
 
     @media (max-width: 400px) {
@@ -105,7 +123,7 @@
   </div>
 
   <div class="audio-controls">
-    <button id="music-btn">■ PAUSE TECHNO</button>
+    <button id="music-btn">🔊 PLAY TECHNO</button>
   </div>
 
   <audio id="bg-music" loop autoplay>
@@ -117,12 +135,16 @@
     const musicBtn = document.getElementById('music-btn');
     const bgMusic = document.getElementById('bg-music');
 
-    // Función para actualizar el reloj
+    // Título Dinámico para la pestaña
+    let originalTitle = document.title;
+    window.addEventListener("blur", () => { document.title = "¡No te lo pierdas! ⚡"; });
+    window.addEventListener("focus", () => { document.title = originalTitle; });
+
     const updateCountdown = () => {
       const now = new Date().getTime();
       const distance = targetDate - now;
       if (distance <= 0) {
-        document.getElementById("countdown-wrapper").innerHTML = "<h2 style='color:#7dd3fc; font-family:Permanent Marker; text-align:center; width:100%'>¡DALE!</h2>";
+        document.getElementById("countdown-wrapper").innerHTML = "<h2 style='color:#7dd3fc; font-family:Permanent Marker; text-shadow: 0 0 20px #f472b6; text-align:center; width:100%; font-size: 2.5rem;'>¡DALE!</h2>";
         return;
       }
       document.getElementById("days").innerText = Math.floor(distance / 86400000).toString().padStart(2, '0');
@@ -131,15 +153,15 @@
       document.getElementById("seconds").innerText = Math.floor((distance % 60000) / 1000).toString().padStart(2, '0');
     };
 
-    // Intentar reproducir música al cargar
+    // Forzar Play si el navegador lo permite
     window.addEventListener('load', () => {
-      bgMusic.play().catch(() => {
-        // Si el navegador bloquea el autoplay, el botón dirá "PLAY"
+      bgMusic.play().then(() => {
+        musicBtn.innerText = "■ PAUSE";
+      }).catch(() => {
         musicBtn.innerText = "▶ PLAY TECHNO";
       });
     });
 
-    // Control del botón
     musicBtn.addEventListener('click', () => {
       if (bgMusic.paused) {
         bgMusic.play();
@@ -150,7 +172,6 @@
       }
     });
 
-    // Iniciar el ciclo
     setInterval(updateCountdown, 1000);
     updateCountdown();
   </script>
