@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>David Fest #29 - Countdown</title>
+  <style>
+    /* Importamos una fuente estilo neón e industrial más agresiva */
+    @import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Permanent+Marker&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    .flyer-container {
+      position: relative;
+      width: 100%;
+      max-width: 500px; /* Ajustado al tamaño de un flyer */
+      line-height: 0;
+    }
+
+    .flyer-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      box-shadow: 0 0 50px rgba(255, 0, 255, 0.2); /* Resplandor morado sutil */
+    }
+
+    /* Contenedor del cronómetro superpuesto al nuevo panel de malla metálica */
+    #countdown-wrapper {
+      position: absolute;
+      top: 48.2%; /* Ajuste fino para centrar en el panel de malla */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      display: flex;
+      justify-content: space-around;
+      line-height: normal;
+    }
+
+    .time-unit {
+      text-align: center;
+    }
+
+    /* Estilo NEÓN VIBRANTE para los números */
+    .number {
+      font-family: 'Russo One', sans-serif;
+      font-size: 2.2rem;
+      display: block;
+      font-weight: 700;
+      color: #7dd3fc; /* Azul cian neón */
+      /* Este efecto es la clave: múltiples sombras para vibración */
+      text-shadow:
+        0 0 10px #3b82f6,
+        0 0 20px #3b82f6,
+        0 0 30px #f472b6, /* Resplandor rosa sutil */
+        1px 1px 2px rgba(0,0,0,0.8);
+      letter-spacing: 2px;
+    }
+
+    /* Ajuste responsivo para celulares */
+    @media (max-width: 400px) {
+      .number { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="flyer-container">
+    <img src="flyer02.jpeg" alt="Flyer David Fest" class="flyer-img">
+
+    <div id="countdown-wrapper">
+      <div class="time-unit">
+        <span class="number" id="days">00</span>
+      </div>
+      <div class="time-unit">
+        <span class="number" id="hours">00</span>
+      </div>
+      <div class="time-unit">
+        <span class="number" id="minutes">00</span>
+      </div>
+      <div class="time-unit">
+        <span class="number" id="seconds">00</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const targetDate = new Date("2026-04-03T18:00:00-06:00").getTime();
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance <= 0) {
+        // Estilo de texto de "YA EMPEZÓ" para que también parezca neón
+        document.getElementById("countdown-wrapper").innerHTML = "<h2 style='color:#7dd3fc; text-shadow:0 0 10px #3b82f6, 0 0 20px #f472b6; font-family: Permanent Marker; font-size:2.2rem; width:100%; text-align:center;'>¡YA EMPEZÓ!</h2>";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((distance / (1000 * 60)) % 60);
+      const seconds = Math.floor((distance / 1000) % 60);
+
+      document.getElementById("days").innerText = days.toString().padStart(2, '0');
+      document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+      document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+      document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
+    };
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown(); // Ejecución inmediata
+  </script>
+
+</body>
+</html>
